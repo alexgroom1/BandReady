@@ -7,6 +7,8 @@ import { useCallback, useState } from "react";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { useBandReady } from "@/lib/useBandReady";
 import type { StudentProfile } from "@/lib/data";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const AVATAR_COLOR_PALETTE = [
   "#4A90D9", // blue
@@ -45,7 +47,10 @@ function ProfileRow({
     <motion.button
       type="button"
       onClick={onSelect}
-      className="w-full min-h-[80px] flex items-center gap-4 px-4 py-3 rounded-2xl border-2 transition-colors text-left bg-white/80 hover:bg-white focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-golden focus-visible:ring-offset-2"
+      className={cn(
+        "c-button c-button--ghost w-full flex items-center gap-4 px-4 py-3 rounded-2xl border-2 border-transparent transition-colors text-left bg-white/80 hover:bg-white focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-golden focus-visible:ring-offset-2",
+        isSelected && "c-button--active border-blue-active bg-white/95"
+      )}
       style={{
         borderColor: isSelected ? "var(--blue-active)" : "transparent",
         backgroundColor: isSelected ? "rgba(255,255,255,0.95)" : undefined,
@@ -86,14 +91,15 @@ export function ProfileSelectScreen() {
     <main className="min-h-screen w-full flex flex-col bg-[#F0F4F8]">
       {/* Header with back arrow + title */}
       <header className="relative flex items-center justify-center min-h-[64px] px-4 shrink-0">
-        <button
+        <Button
           type="button"
+          variant="icon"
           onClick={handleBack}
-          className="absolute left-0 top-1/2 -translate-y-1/2 min-w-[80px] min-h-[80px] w-20 h-20 flex items-center justify-center text-slate-text hover:text-blue-active focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-golden focus-visible:ring-offset-2 rounded-full"
+          className="absolute left-0 top-1/2 -translate-y-1/2"
           aria-label="Go back"
         >
           <ArrowLeft size={28} strokeWidth={2.5} />
-        </button>
+        </Button>
         <h1 className="font-nunito font-bold text-2xl md:text-3xl text-slate-text text-center">
           Who&apos;s learning today?
         </h1>
@@ -117,14 +123,15 @@ export function ProfileSelectScreen() {
 
       {/* Fixed bottom CTA */}
       <div className="shrink-0 p-6 pt-4 bg-[#F0F4F8]">
-        <motion.button
+        <Button
           type="button"
+          variant="primary"
           onClick={handleLetsGo}
           disabled={!selectedId}
-          className="w-full min-h-[80px] font-nunito font-bold text-2xl text-slate-text bg-golden rounded-2xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-[0.98] transition-opacity focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-golden focus-visible:ring-offset-2"
+          className="w-full text-2xl gap-2"
         >
           Let&apos;s Go →
-        </motion.button>
+        </Button>
       </div>
     </main>
   );

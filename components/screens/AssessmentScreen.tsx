@@ -8,6 +8,8 @@ import { Check, Volume2 } from "lucide-react";
 import { getQuestions, type Question } from "@/lib/data";
 import { getBandReadyStore } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 const TOTAL_QUESTIONS = 8;
 
@@ -42,6 +44,7 @@ function getAssessmentQuestions(moduleId: string): Question[] {
 }
 
 function TrebleStaffWithHighlight({ highlightedNote }: { highlightedNote: string }) {
+  const reducedMotion = useReducedMotion();
   const pos = TREBLE_NOTE_POSITIONS[highlightedNote] ?? TREBLE_NOTE_POSITIONS.C;
 
   return (
@@ -154,13 +157,14 @@ export function AssessmentScreen({ moduleId }: { moduleId: string }) {
     return (
       <main className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F0F4F8] p-8">
         <p className="font-nunito text-slate-text">No questions available for this module.</p>
-        <button
+        <Button
           type="button"
+          variant="secondary"
           onClick={() => router.push("/home")}
-          className="mt-4 min-h-[80px] px-6 py-3 rounded-xl font-nunito font-bold text-sm text-white bg-blue-active"
+          className="mt-4 rounded-xl text-sm"
         >
           Home
-        </button>
+        </Button>
       </main>
     );
   }
@@ -200,30 +204,33 @@ export function AssessmentScreen({ moduleId }: { moduleId: string }) {
         {/* Visual card + Play Note button */}
         <div className="flex items-center justify-center gap-4 max-w-lg mx-auto w-full">
           <motion.div
-            className="flex-1 bg-white rounded-3xl shadow-lg p-8 flex items-center justify-center min-h-[200px] border border-slate-200/60 relative overflow-hidden"
+            className="flex-1"
             animate={!reducedMotion && feedback === "correct"
               ? { boxShadow: ["0 10px 15px -3px rgb(0 0 0 / 0.1)", "0 0 0 4px var(--mint)"] }
               : {}}
             transition={feedback === "correct" ? { duration: reducedMotion ? 0 : 0.3, ease: "easeOut" } : {}}
           >
-            {feedback === "correct" && (
-              <motion.div
-                className="absolute inset-0 bg-mint/30 pointer-events-none"
-                initial={reducedMotion ? false : { opacity: 0 }}
-                animate={{ opacity: [0, 1, 0] }}
-                transition={{ duration: reducedMotion ? 0 : 0.8 }}
-              />
-            )}
-            <TrebleStaffWithHighlight highlightedNote={question.correctAnswer} />
+            <Card variant="elevated" className="flex items-center justify-center min-h-[200px] relative overflow-hidden">
+              {feedback === "correct" && (
+                <motion.div
+                  className="absolute inset-0 bg-mint/30 pointer-events-none"
+                  initial={reducedMotion ? false : { opacity: 0 }}
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{ duration: reducedMotion ? 0 : 0.8 }}
+                />
+              )}
+              <TrebleStaffWithHighlight highlightedNote={question.correctAnswer} />
+            </Card>
           </motion.div>
-          <button
+          <Button
             type="button"
+            variant="secondary"
             onClick={handlePlayNote}
-            className="shrink-0 min-w-[80px] min-h-[80px] w-20 h-20 rounded-2xl bg-blue-active hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center text-white focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-golden focus-visible:ring-offset-2"
+            className="shrink-0 min-w-[80px] min-h-[80px] w-20 h-20 rounded-2xl p-0"
             aria-label="Play note (note shown highlighted on staff)"
           >
             <Volume2 size={32} strokeWidth={2.5} />
-          </button>
+          </Button>
         </div>
 
         {/* 4 answer buttons - 2x2 grid */}

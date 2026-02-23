@@ -5,8 +5,11 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Star, Award } from "lucide-react";
-import { MODULE_ORDER, MODULE_DEFINITIONS } from "@/lib/data";
+import { MODULE_DEFINITIONS } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { CONFETTI_CSS } from "@/lib/confetti-css";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 const PASS_THRESHOLD = 75; // 6/8 ≈ 75%
 
@@ -102,19 +105,9 @@ export function ResultsScreen({
     const modDef = MODULE_DEFINITIONS.find((m) => m.id === moduleId);
     const moduleTitle = modDef?.title ?? "Module";
 
-    return (
-      <main className="min-h-screen w-full flex flex-col items-center bg-[#F0F4F8] overflow-hidden relative">
-        <style>{`
-          @keyframes confetti-fall {
-            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-          }
-          .animate-confetti-fall {
-            animation: confetti-fall 4s ease-out forwards;
-          }
-          @media (prefers-reduced-motion: reduce) {
-            .animate-confetti-fall { animation: none; }
-          }
-        `}</style>
+    const passedContent = (
+      <div role="main" className="min-h-screen w-full flex flex-col items-center bg-[#F0F4F8] overflow-hidden relative">
+        <style>{CONFETTI_CSS}</style>
         <ConfettiOverlay />
 
         <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 max-w-lg mx-auto">
@@ -159,66 +152,76 @@ export function ResultsScreen({
 
           {/* Badge earned card with golden glow */}
           <motion.div
-            className="relative w-full max-w-xs bg-white rounded-3xl p-6 shadow-xl border-2 border-golden/50 mb-8"
             initial={reducedMotion ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={reducedMotion ? { duration: 0 } : { delay: 0.5 }}
-            style={{
-              boxShadow: "0 0 24px rgba(245, 166, 35, 0.4)",
-            }}
+            style={{ boxShadow: "0 0 24px rgba(245, 166, 35, 0.4)" }}
           >
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-16 h-16 rounded-full bg-golden/20 flex items-center justify-center">
-                <Award size={36} className="text-golden" />
+            <Card
+              variant="elevated"
+              className="relative w-full max-w-xs p-6 mb-8 border-2 border-golden/50"
+            >
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-16 h-16 rounded-full bg-golden/20 flex items-center justify-center">
+                  <Award size={36} className="text-golden" />
+                </div>
+                <p className="font-nunito font-bold text-slate-text">Badge earned</p>
+                <p className="font-nunito text-slate-text/80 text-sm">{moduleTitle}</p>
               </div>
-              <p className="font-nunito font-bold text-slate-text">Badge earned</p>
-              <p className="font-nunito text-slate-text/80 text-sm">{moduleTitle}</p>
-            </div>
+            </Card>
           </motion.div>
 
           {/* Class leaderboard */}
           <motion.div
-            className="w-full max-w-xs bg-white rounded-2xl p-4 shadow-lg border border-slate-200/60 mb-8"
             initial={reducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={reducedMotion ? { duration: 0 } : { delay: 0.6 }}
-            <p className="font-nunito font-bold text-slate-text text-sm mb-3">
-              Class leaderboard
-            </p>
-            {MOCK_LEADERBOARD.map((entry, i) => (
-              <div
-                key={entry.name}
-                className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0"
-              >
-                <span className="font-nunito text-slate-text">
-                  {i + 1}. {entry.name}
-                </span>
-                <span className="font-nunito font-bold text-slate-text">
-                  {entry.score}%
-                </span>
-              </div>
-            ))}
+          >
+            <Card variant="outlined" className="w-full max-w-xs p-4 mb-8 shadow-lg">
+              <p className="font-nunito font-bold text-slate-text text-sm mb-3">
+                Class leaderboard
+              </p>
+              {MOCK_LEADERBOARD.map((entry, i) => (
+                <div
+                  key={entry.name}
+                  className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0"
+                >
+                  <span className="font-nunito text-slate-text">
+                    {i + 1}. {entry.name}
+                  </span>
+                  <span className="font-nunito font-bold text-slate-text">
+                    {entry.score}%
+                  </span>
+                </div>
+              ))}
+            </Card>
           </motion.div>
 
           {/* Continue button */}
-          <motion.button
-            type="button"
-            onClick={handleContinue}
-            className="w-full max-w-xs min-h-[80px] py-4 rounded-2xl font-nunito font-bold text-lg text-white bg-golden hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+          <motion.div
             initial={reducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={reducedMotion ? { duration: 0 } : { delay: 0.7 }}
+            className="w-full max-w-xs"
           >
-            Continue →
-          </motion.button>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={handleContinue}
+              className="w-full py-4 text-lg gap-2"
+            >
+              Continue →
+            </Button>
+          </motion.div>
         </div>
-      </main>
+      </div>
     );
+    return passedContent;
   }
 
   // Below threshold: supportive mascot + options
   return (
-    <main className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F0F4F8] px-6 py-12">
+    <div role="main" className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F0F4F8] px-6 py-12">
       {/* Mascot + supportive message */}
       <motion.div
         className="flex flex-col items-center mb-8"
@@ -236,21 +239,23 @@ export function ResultsScreen({
 
       {/* Two options */}
       <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
-        <button
+        <Button
           type="button"
+          variant="primary"
           onClick={handlePracticeAgain}
-          className="flex-1 min-h-[80px] py-4 rounded-2xl font-nunito font-bold text-lg text-white bg-golden hover:opacity-90 active:scale-[0.98] transition-all"
+          className="flex-1 py-4 text-lg"
         >
           Practice Again
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="secondary"
           onClick={handleReviewLesson}
-          className="flex-1 min-h-[80px] py-4 rounded-2xl font-nunito font-bold text-lg text-slate-text bg-white border-2 border-blue-active text-blue-active hover:bg-blue-active/5 active:scale-[0.98] transition-all"
+          className="flex-1 py-4 text-lg"
         >
           Review Lesson
-        </button>
+        </Button>
       </div>
-    </main>
+    </div>
   );
 }

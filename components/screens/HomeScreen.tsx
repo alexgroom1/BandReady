@@ -18,6 +18,9 @@ import {
 } from "lucide-react";
 import { useBandReady } from "@/lib/useBandReady";
 import type { Module } from "@/lib/data";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 const MODULE_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   "book-music": BookOpen,
@@ -42,15 +45,14 @@ function ModuleCard({
   const isLocked = module.status === "locked";
 
   return (
-    <div
-      className={`
-        min-w-[140px] min-h-[160px] w-[140px] rounded-2xl p-4 flex flex-col
-        border-2 transition-colors shrink-0
-        ${isLocked ? "cursor-default" : "cursor-pointer"}
-        ${isCompleted ? "border-mint bg-white/90" : ""}
-        ${isActive ? "border-blue-active bg-white shadow-md ring-2 ring-blue-active/30" : ""}
-        ${isLocked ? "border-locked bg-slate-100/80" : ""}
-      `}
+    <Card
+      variant={
+        isLocked ? "locked" : isCompleted ? "completed" : isActive ? "active" : "outlined"
+      }
+      className={cn(
+        "min-w-[140px] min-h-[160px] w-[140px] p-4 flex flex-col shrink-0",
+        !isLocked && "cursor-pointer"
+      )}
     >
       {/* Header with icon / check / lock */}
       <div className="flex items-start justify-between mb-2">
@@ -89,19 +91,20 @@ function ModuleCard({
           <span className="inline-block px-2 py-0.5 rounded-full text-xs font-bold text-blue-active bg-blue-active/15">
             CONTINUE
           </span>
-          <button
+          <Button
             type="button"
-            className="w-full min-h-[80px] py-3 rounded-xl font-nunito font-bold text-sm text-slate-text bg-golden hover:opacity-90 active:scale-[0.98] transition-opacity"
+            variant="primary"
+            className="w-full py-3 rounded-xl text-sm"
             onClick={(e) => {
               e.stopPropagation();
               onStartLesson();
             }}
           >
             Start Lesson
-          </button>
+          </Button>
         </div>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -144,7 +147,7 @@ function LockableModuleCard({
       aria-label={`${module.title}, ${module.status === "active" ? "Continue" : module.status === "locked" ? "Locked" : "Completed"}`}
       animate={!reducedMotion && module.status === "locked" && shake ? { x: [0, -6, 6, -6, 6, 0] } : {}}
       transition={{ duration: 0.35 }}
-      className="shrink-0 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-golden focus-visible:ring-offset-2 rounded-2xl"
+      className="shrink-0 c-card rounded-2xl focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-golden focus-visible:ring-offset-2"
     >
       <ModuleCard module={module} onStartLesson={onActiveSelect} />
     </motion.div>
@@ -191,16 +194,17 @@ export function HomeScreen() {
         </div>
 
         {/* Settings gear - top right corner */}
-        <button
+        <Button
           type="button"
-          className="absolute top-6 right-6 min-w-[80px] min-h-[80px] w-20 h-20 flex items-center justify-center text-slate-text/70 hover:text-slate-text rounded-full focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-golden"
+          variant="icon"
+          className="absolute top-6 right-6 text-slate-text/70 hover:text-slate-text"
           aria-label="Settings"
         >
           <Settings size={24} />
-        </button>
+        </Button>
 
         {/* Course Progress card - top right */}
-        <div className="shrink-0 w-full sm:w-56 bg-white rounded-2xl p-4 shadow-sm border border-slate-200/60">
+        <Card variant="outlined" className="shrink-0 w-full sm:w-56">
           <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-mint rounded-full"
@@ -215,7 +219,7 @@ export function HomeScreen() {
               {badgeCount} badges earned
             </span>
           </div>
-        </div>
+        </Card>
       </header>
 
       {/* Your Learning Path - horizontal scroll, max 5 visible */}

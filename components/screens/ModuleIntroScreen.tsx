@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { ArrowLeft } from "lucide-react";
 import { MODULE_DEFINITIONS } from "@/lib/data";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 const TOTAL_STEPS = 5;
 const CURRENT_STEP = 1;
@@ -100,14 +102,14 @@ export function ModuleIntroScreen({ moduleId }: { moduleId: string }) {
     <main className="min-h-screen w-full flex flex-col bg-[#F0F4F8]">
       {/* Top bar */}
       <header className="flex items-center justify-between px-4 py-4 shrink-0">
-        <button
+        <Button
           type="button"
+          variant="icon"
           onClick={handleBack}
-          className="min-w-[80px] min-h-[80px] w-20 h-20 flex items-center justify-center text-slate-text hover:text-blue-active rounded-full focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-golden"
           aria-label="Go back"
         >
           <ArrowLeft size={28} strokeWidth={2.5} />
-        </button>
+        </Button>
 
         {/* Step dots - center */}
         <div className="flex items-center gap-2">
@@ -133,28 +135,30 @@ export function ModuleIntroScreen({ moduleId }: { moduleId: string }) {
         </h1>
 
         {/* Visual content card */}
-        <div className="w-full max-w-md bg-white rounded-3xl shadow-lg p-8 flex items-center justify-center min-h-[220px]">
+        <Card variant="elevated" className="w-full max-w-md flex items-center justify-center min-h-[220px]">
           <TrebleClefStaff reducedMotion={reducedMotion} />
-        </div>
+        </Card>
 
         {/* Listen along - secondary */}
-        <button
+        <Button
           type="button"
-          className="mt-6 min-h-[80px] px-6 py-3 rounded-2xl font-nunito font-bold text-slate-text bg-slate-200/80 hover:bg-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-golden"
+          variant="ghost"
+          className="mt-6 bg-slate-200/80 hover:bg-slate-200"
         >
           🎧 Listen along
-        </button>
+        </Button>
       </div>
 
       {/* Fixed bottom CTA */}
       <div className="fixed bottom-0 left-0 right-0 p-6 bg-[#F0F4F8] flex justify-center">
-        <button
+        <Button
           type="button"
+          variant="primary"
           onClick={handleBegin}
-          className="min-w-[240px] min-h-[80px] px-8 font-nunito font-bold text-xl text-slate-text bg-golden rounded-2xl hover:opacity-90 active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-golden focus-visible:ring-offset-2"
+          className="min-w-[240px] text-xl"
         >
           BEGIN MODULE
-        </button>
+        </Button>
       </div>
     </main>
   );

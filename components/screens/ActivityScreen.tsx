@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check } from "lucide-react";
 import { getQuestions, type Question } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 /** Note positions on treble staff (y in SVG coords). */
 const TREBLE_NOTE_POSITIONS: Record<string, { y: number }> = {
@@ -28,6 +30,7 @@ function pickOptions(question: Question): string[] {
 }
 
 function TrebleStaffWithHighlight({ highlightedNote }: { highlightedNote: string }) {
+  const reducedMotion = useReducedMotion();
   const pos = TREBLE_NOTE_POSITIONS[highlightedNote] ?? TREBLE_NOTE_POSITIONS.C;
 
   return (
@@ -130,13 +133,14 @@ export function ActivityScreen({ moduleId }: { moduleId: string }) {
         <p className="flex-1 text-center font-nunito text-slate-text/80 text-sm">
           Take your time — no points, just practice!
         </p>
-        <button
+        <Button
           type="button"
+          variant="secondary"
           onClick={handleDone}
-          className="shrink-0 min-h-[80px] px-6 py-3 rounded-xl font-nunito font-bold text-sm text-white bg-blue-active hover:opacity-90 active:scale-[0.98] transition-all"
+          className="shrink-0 rounded-xl text-sm"
         >
           Done
-        </button>
+        </Button>
       </header>
 
       {/* Content */}
@@ -149,9 +153,9 @@ export function ActivityScreen({ moduleId }: { moduleId: string }) {
         </p>
 
         {/* Visual content card */}
-        <div className="w-full max-w-md mx-auto bg-white rounded-3xl shadow-lg p-8 flex items-center justify-center min-h-[200px] border border-slate-200/60">
+        <Card variant="elevated" className="w-full max-w-md mx-auto flex items-center justify-center min-h-[200px]">
           <TrebleStaffWithHighlight highlightedNote={question.correctAnswer} />
-        </div>
+        </Card>
 
         {/* 4 answer buttons - 2x2 grid */}
         <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto w-full mt-6">

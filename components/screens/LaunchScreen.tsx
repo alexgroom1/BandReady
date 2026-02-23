@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import { cn } from "@/lib/utils";
 
 /** Friendly cartoon music note mascot placeholder SVG */
 function MusicNoteMascot() {
@@ -73,7 +74,10 @@ export function LaunchScreen() {
         <motion.button
           onClick={handleStartClick}
           disabled={isNavigating}
-          className="min-w-[200px] min-h-[80px] px-10 font-nunito font-bold text-2xl text-slate-text bg-golden rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed transition-opacity focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-golden focus-visible:ring-offset-2"
+          className={cn(
+            "c-button c-button--primary min-w-[200px] gap-2 text-2xl",
+            isNavigating && "c-button--disabled"
+          )}
           animate={reducedMotion ? undefined : {
             scale: [1, 1.03, 1],
             boxShadow: [

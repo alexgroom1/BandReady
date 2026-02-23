@@ -88,3 +88,88 @@
     --ring: 240 4.9% 83.9%;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   BEM component classes (c- = component). Use with Tailwind @layer components.
+   High-contrast, touch-friendly styles for 4th/5th grade band app.
+   --------------------------------------------------------------------------- */
+@layer components {
+  /* ---- Button ---- */
+  .c-button {
+    @apply inline-flex items-center justify-center font-nunito font-bold text-button-label rounded-2xl min-h-interactive px-8 transition-all duration-200 border-[3px] border-transparent focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-golden focus-visible:ring-offset-2 active:scale-[0.98];
+  }
+
+  .c-button--primary {
+    @apply bg-golden text-slate-text border-golden hover:opacity-90;
+  }
+
+  .c-button--secondary {
+    @apply bg-blue-active text-white border-blue-700 hover:opacity-90;
+  }
+
+  .c-button--ghost {
+    @apply bg-transparent text-slate-text border-transparent hover:bg-slate-200/50;
+  }
+
+  .c-button--active {
+    @apply scale-105 ring-4 ring-yellow-400 border-yellow-500;
+  }
+
+  .c-button--loading {
+    @apply animate-bounce pointer-events-none;
+  }
+
+  .c-button--disabled {
+    @apply opacity-50 cursor-not-allowed grayscale pointer-events-none;
+  }
+
+  .c-button--icon {
+    @apply rounded-full min-w-[80px] min-h-[80px] w-20 h-20 p-0 border-2 border-transparent text-slate-text hover:text-blue-active;
+  }
+
+  /* ---- Card ---- */
+  .c-card {
+    @apply rounded-2xl border-2 border-slate-200/60 bg-white transition-colors font-nunito;
+  }
+
+  .c-card--elevated {
+    @apply rounded-3xl shadow-lg p-8 border-slate-200/60;
+  }
+
+  .c-card--outlined {
+    @apply rounded-2xl shadow-sm p-4 border-slate-200/60;
+  }
+
+  .c-card--active {
+    @apply border-blue-active bg-white shadow-md ring-2 ring-blue-active;
+  }
+
+  .c-card--locked {
+    @apply border-locked bg-slate-100/80 cursor-default;
+  }
+
+  .c-card--completed {
+    @apply border-mint bg-white/90;
+  }
+
+  /* ---- Input (wrapper + field) ---- */
+  .c-input {
+    @apply block w-full;
+  }
+
+  .c-input__field {
+    @apply w-full font-nunito text-body rounded-2xl border-[3px] border-slate-300 bg-white text-slate-text px-4 py-3 min-h-interactive transition-all duration-200 placeholder:text-slate-400 focus:outline-none focus:ring-[3px] focus:ring-golden focus:ring-offset-2 focus:border-golden;
+  }
+
+  .c-input__field--active {
+    @apply scale-[1.02] ring-4 ring-yellow-400 border-yellow-500;
+  }
+
+  .c-input__field--disabled {
+    @apply opacity-50 cursor-not-allowed grayscale bg-slate-100 border-slate-200;
+  }
+
+  .c-input__field--loading {
+    @apply animate-pulse pointer-events-none;
+  }
+}
