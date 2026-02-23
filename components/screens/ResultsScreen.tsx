@@ -1,0 +1,256 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { useReducedMotion } from "@/lib/useReducedMotion";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { Star, Award } from "lucide-react";
+import { MODULE_ORDER, MODULE_DEFINITIONS } from "@/lib/data";
+import { cn } from "@/lib/utils";
+
+const PASS_THRESHOLD = 75; // 6/8 ≈ 75%
+
+/** Mock class leaderboard */
+const MOCK_LEADERBOARD = [
+  { name: "Emma", score: 100 },
+  { name: "Marcus", score: 88 },
+  { name: "Sofia", score: 75 },
+];
+
+function scoreToStars(score: number): number {
+  if (score >= 100) return 5;
+  if (score >= 80) return 4;
+  if (score >= 60) return 3;
+  if (score >= 40) return 2;
+  if (score >= 20) return 1;
+  return 0;
+}
+
+/** CSS-based confetti effect */
+function ConfettiOverlay() {
+  const colors = ["#f5a623", "#52c98a", "#4a90d9", "#f5a623", "#e74c3c"];
+  const count = 50;
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
+      {Array.from({ length: count }).map((_, i) => (
+        <div
+          key={i}
+          className="absolute w-2 h-2 rounded-sm animate-confetti-fall"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: "-10px",
+            backgroundColor: colors[i % colors.length],
+            animationDelay: `${Math.random() * 2}s`,
+            transform: `rotate(${Math.random() * 360}deg)`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+export function ResultsScreen({
+  moduleId,
+  score,
+}: {
+  moduleId: string;
+  score: number;
+}) {
+  const router = useRouter();
+  const confettiFired = useRef(false);
+  const reducedMotion = useReducedMotion();
+
+  const passed = score >= PASS_THRESHOLD;
+  const starCount = scoreToStars(score);
+
+
+  useEffect(() => {
+    if (passed && !reducedMotion && !confettiFired.current && typeof window !== "undefined") {
+      confettiFired.current = true;
+      // Try canvas-confetti if available, else rely on CSS
+      import("canvas-confetti").then((confetti) => {
+        const duration = 2;
+        const end = Date.now() + duration * 1000;
+        const colors = ["#f5a623", "#52c98a", "#4a90d9"];
+        (function frame() {
+          confetti.default({
+            particleCount: 3,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors,
+          });
+          confetti.default({
+            particleCount: 3,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors,
+          });
+          if (Date.now() < end) requestAnimationFrame(frame);
+        })();
+      }).catch(() => {});
+    }
+  }, [passed, reducedMotion]);
+
+  const handleContinue = () => router.push("/home");
+  const handlePracticeAgain = () => router.push(`/module/${moduleId}/practice`);
+  const handleReviewLesson = () => router.push(`/module/${moduleId}`);
+
+  if (passed) {
+    const modDef = MODULE_DEFINITIONS.find((m) => m.id === moduleId);
+    const moduleTitle = modDef?.title ?? "Module";
+
+    return (
+      <main className="min-h-screen w-full flex flex-col items-center bg-[#F0F4F8] overflow-hidden relative">
+        <style>{`
+          @keyframes confetti-fall {
+            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+          }
+          .animate-confetti-fall {
+            animation: confetti-fall 4s ease-out forwards;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .animate-confetti-fall { animation: none; }
+          }
+        `}</style>
+        <ConfettiOverlay />
+
+        <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 max-w-lg mx-auto">
+          <motion.h1
+            className="font-nunito font-bold text-2xl md:text-3xl text-golden text-center mb-6"
+            initial={reducedMotion ? false : { scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 20 }}
+          >
+            🎉 Module Complete!
+          </motion.h1>
+
+          {/* Star rating - animated fill */}
+          <motion.div
+            className="flex gap-1 mb-8"
+            initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={reducedMotion ? { duration: 0 } : { delay: 0.2 }}
+          >
+            {[1, 2, 3, 4, 5].map((i) => (
+              <motion.div
+                key={i}
+                initial={reducedMotion ? false : { scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={reducedMotion ? { duration: 0 } : {
+                  delay: 0.3 + i * 0.1,
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 20,
+                }}
+              >
+                <Star
+                  size={36}
+                  className={cn(
+                    "transition-colors",
+                    i <= starCount ? "fill-golden text-golden" : "text-slate-200"
+                  )}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Badge earned card with golden glow */}
+          <motion.div
+            className="relative w-full max-w-xs bg-white rounded-3xl p-6 shadow-xl border-2 border-golden/50 mb-8"
+            initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={reducedMotion ? { duration: 0 } : { delay: 0.5 }}
+            style={{
+              boxShadow: "0 0 24px rgba(245, 166, 35, 0.4)",
+            }}
+          >
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-16 h-16 rounded-full bg-golden/20 flex items-center justify-center">
+                <Award size={36} className="text-golden" />
+              </div>
+              <p className="font-nunito font-bold text-slate-text">Badge earned</p>
+              <p className="font-nunito text-slate-text/80 text-sm">{moduleTitle}</p>
+            </div>
+          </motion.div>
+
+          {/* Class leaderboard */}
+          <motion.div
+            className="w-full max-w-xs bg-white rounded-2xl p-4 shadow-lg border border-slate-200/60 mb-8"
+            initial={reducedMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={reducedMotion ? { duration: 0 } : { delay: 0.6 }}
+            <p className="font-nunito font-bold text-slate-text text-sm mb-3">
+              Class leaderboard
+            </p>
+            {MOCK_LEADERBOARD.map((entry, i) => (
+              <div
+                key={entry.name}
+                className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0"
+              >
+                <span className="font-nunito text-slate-text">
+                  {i + 1}. {entry.name}
+                </span>
+                <span className="font-nunito font-bold text-slate-text">
+                  {entry.score}%
+                </span>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Continue button */}
+          <motion.button
+            type="button"
+            onClick={handleContinue}
+            className="w-full max-w-xs min-h-[80px] py-4 rounded-2xl font-nunito font-bold text-lg text-white bg-golden hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            initial={reducedMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={reducedMotion ? { duration: 0 } : { delay: 0.7 }}
+          >
+            Continue →
+          </motion.button>
+        </div>
+      </main>
+    );
+  }
+
+  // Below threshold: supportive mascot + options
+  return (
+    <main className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F0F4F8] px-6 py-12">
+      {/* Mascot + supportive message */}
+      <motion.div
+        className="flex flex-col items-center mb-8"
+        initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={reducedMotion ? { duration: 0 } : { duration: 0.4 }}
+      >
+        <div className="w-24 h-24 rounded-full bg-golden/30 flex items-center justify-center text-4xl mb-4 border-2 border-golden/50">
+          🎵
+        </div>
+        <p className="font-nunito text-slate-text text-lg text-center max-w-sm">
+          Nice try! Want to practice more?
+        </p>
+      </motion.div>
+
+      {/* Two options */}
+      <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
+        <button
+          type="button"
+          onClick={handlePracticeAgain}
+          className="flex-1 min-h-[80px] py-4 rounded-2xl font-nunito font-bold text-lg text-white bg-golden hover:opacity-90 active:scale-[0.98] transition-all"
+        >
+          Practice Again
+        </button>
+        <button
+          type="button"
+          onClick={handleReviewLesson}
+          className="flex-1 min-h-[80px] py-4 rounded-2xl font-nunito font-bold text-lg text-slate-text bg-white border-2 border-blue-active text-blue-active hover:bg-blue-active/5 active:scale-[0.98] transition-all"
+        >
+          Review Lesson
+        </button>
+      </div>
+    </main>
+  );
+}
